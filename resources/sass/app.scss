@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// Variables
+$primary-color: #3b82f6; // Tailwind's blue-500
+$hover-primary-color: #2563eb; // Tailwind's blue-700
+$text-gray: #4b5563; // Tailwind's gray-700
+$border-color: #d1d5db; // Tailwind's gray-300
+$background-gray: #f3f4f6; // Tailwind's gray-100
+
+// Common Styles
+.lonovus-container {
+    @apply flex items-center justify-center min-h-screen bg-gray-100;
+}
+
+.card {
+    @apply max-w-md w-full mx-auto rounded overflow-hidden shadow-lg bg-white;
+}
+
+.card-title {
+    @apply font-bold text-xl text-center my-4;
+}
+
+.input {
+    @apply w-full px-4 py-2 mb-1 border-b border-gray-300 text-center;
+    &:focus {
+        @apply outline-none border-blue-500;
+    }
+}
+
+.loading-bar {
+    @apply w-3/4 h-1 bg-gray-200 px-4 mx-auto my-4 relative overflow-hidden;
+    .bar {
+        @apply absolute top-0 left-0 w-full bg-blue-500 h-1;
+        animation: slide 1.5s infinite linear;
+    }
+}
+
+// Keyframes for sliding animation
+@keyframes slide {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.user-list {
+    @apply px-4;
+    ul {
+        @apply divide-y divide-gray-200;
+        border-top: 1px solid $border-color;
+        border-bottom: 1px solid $border-color;
+        .user-item {
+            @apply flex items-center py-2;
+            img {
+                @apply w-10 h-10 rounded-full mr-4;
+            }
+            span {
+                @apply font-medium text-gray-900;
+            }
+        }
+    }
+}
+
+.button {
+    @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
+    text-align: center;
+    cursor: pointer;
+}
