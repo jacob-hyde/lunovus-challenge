@@ -38,16 +38,16 @@ const Index = () => {
         async function fetchUser() {
             setLoading(true);
             try {
-                const { data: { data } } = await axios.get(`/api/github/search?q=${debounceUserInput}`);
-                if (data?.total) {
+                const { data: { data, total } } = await axios.get(`/api/github/search?q=${debounceUserInput}`);
+                if (total) {
                     setFollowers([]);
                     setUser(null);
-                    setUsers(data.users);
+                    setUsers(data);
                 } else {
                     setFollowers([]);
                     setUsers([]);
                     setUser(data);
-                    setFollowers(data.follower_users);
+                    setFollowers(data?.follower_users);
                     if (data?.followers <= 10) {
                         setShowLoadMore(false);
                     } else {
@@ -70,11 +70,11 @@ const Index = () => {
         }
         setLoading(true);
         try {
-            const { data: { data } } = await axios.get(`/api/github/${user.login}/followers?page=${nextPage}&total=${user?.followers}`);
-            if (data?.followers) {
-                setFollowers([...followers, ...data?.followers]);
-                setNextPage(data?.next_page);
-                if (!data?.next_page) {
+            const { data: { data, next_page } } = await axios.get(`/api/github/${user.login}/followers?page=${nextPage}&total=${user?.followers}`);
+            if (data.length > 0) {
+                setFollowers([...followers, ...data]);
+                setNextPage(next_page);
+                if (!next_page) {
                     setShowLoadMore(false);
                 }
             }

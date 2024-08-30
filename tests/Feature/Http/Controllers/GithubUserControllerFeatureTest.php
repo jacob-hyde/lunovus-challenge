@@ -48,16 +48,14 @@ class GithubUserControllerFeatureTest extends TestCase
             'incomplete_results' => false,
             'items' => [
                 [
-                    'login' => 'john1',
                     'id' => 1,
+                    'login' => 'john1',
                     'avatar_url' => 'https://avatars.githubusercontent.com/u/1?v=4',
-                    'url' => 'https://api.github.com/users/john1',
                 ],
                 [
-                    'login' => 'john2',
                     'id' => 2,
+                    'login' => 'john2',
                     'avatar_url' => 'https://avatars.githubusercontent.com/u/2?v=4',
-                    'url' => 'https://api.github.com/users/john2',
                 ],
             ],
         ];
@@ -70,13 +68,8 @@ class GithubUserControllerFeatureTest extends TestCase
 
         $response->assertOk();
         $response->assertJson([
-            'data' => [
-                'users' => [
-                    ['login' => 'john1'],
-                    ['login' => 'john2'],
-                ],
-                'total' => 2,
-            ],
+            'data' => $fakeResponse['items'],
+            'total' => 2,
         ]);
     }
 
@@ -90,18 +83,16 @@ class GithubUserControllerFeatureTest extends TestCase
         $username = 'johndoe';
 
         $fakeUserResponse = [
-            'login' => 'johndoe',
             'id' => 1,
+            'login' => 'johndoe',
             'avatar_url' => 'https://avatars.githubusercontent.com/u/1?v=4',
-            'url' => 'https://api.github.com/users/johndoe',
         ];
 
         $fakeFollowersResponse = [
             [
-                'login' => 'janedoe',
                 'id' => 2,
+                'login' => 'janedoe',
                 'avatar_url' => 'https://avatars.githubusercontent.com/u/2?v=4',
-                'url' => 'https://api.github.com/users/janedoe',
             ],
         ];
 
@@ -135,10 +126,9 @@ class GithubUserControllerFeatureTest extends TestCase
 
         $fakeFollowersResponse = [
             [
-                'login' => 'follower1',
                 'id' => 3,
+                'login' => 'follower1',
                 'avatar_url' => 'https://avatars.githubusercontent.com/u/3?v=4',
-                'url' => 'https://api.github.com/users/follower1',
             ],
         ];
 
@@ -150,12 +140,8 @@ class GithubUserControllerFeatureTest extends TestCase
 
         $response->assertOk();
         $response->assertJson([
-            'data' => [
-                'followers' => [
-                    ['login' => 'follower1'],
-                ],
-                'next_page' => 2,
-            ],
+            'data' => $fakeFollowersResponse,
+            'next_page' => 2,
         ]);
     }
 }

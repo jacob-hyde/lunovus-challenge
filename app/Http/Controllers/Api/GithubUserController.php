@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\GithubUserFollowerResource;
+use App\Http\Resources\GithubUserResource;
 use App\Services\GithubService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class GithubUserController extends Controller
 {
@@ -14,14 +17,20 @@ class GithubUserController extends Controller
 
     public function search(Request $request): JsonResponse|RedirectResponse
     {
+        // I should deal if this is empty by returning a 400 response, but the front-end takes care of it for now
         $handleSearchQuery = $request->query('q', '');
         $users = $this->githubService->searchUsers($handleSearchQuery, $request->query('page', 1));
 
-        if ($users['items'][0]['login'] === $handleSearchQuery) { // Other users have handles that begin with taylorotwell, but if there is a direct match it would be the first item
+        // Other users have handles that begin with taylorotwell, but if there is a direct match it would be the first item
+        if ($users['items'][0]['login'] === $handleSearchQuery) {
             return redirect()->route('github.show', ['username' => $users['items'][0]['login']]);
         }
 
-        return response()->json(['data' => ['users' => $users['items'], 'total' => $users['total_count']]]);
+        return GithubUserResource::collection($users['items'])
+            ->additional(['total' => $users['total_count']])
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
+
     }
 
     public function show(string $username): JsonResponse
@@ -29,17 +38,19 @@ class GithubUserController extends Controller
         $user = $this->githubService->getUser($username);
         $user['follower_users'] = $this->githubService->getUserFollowers($username, 1);
 
-        return response()->json(['data' => $user]);
+        return (new GithubUserResource($user))
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
     }
 
     public function followers(string $username, Request $request): JsonResponse
     {
-        $followers = $this->githubService->getUserFollowers($username, $request->query('page', 1));
-        $nextPage = $request->query('page', 1) + 1;
-        if ($nextPage > $request->query('total') / 10) {
-            $nextPage = false;
-        }
+        $page = $request->query('page', 1);
+        $followers = $this->githubService->getUserFollowers($username, $page);
+        $nextPage = $request->query('total') / 10 > $page ? $page + 1 : false;
 
-        return response()->json(['data' => ['followers' => $followers, 'next_page' => $nextPage]]);
+        return GithubUserFollowerResource::collection(collect($followers))->additional(['next_page' => $nextPage])
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
     }
 }
