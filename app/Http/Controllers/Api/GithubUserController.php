@@ -4,13 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\GithubService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class GithubUserController extends Controller
 {
     public function __construct(private GithubService $githubService){}
 
-    public function search(Request $request)
+    public function search(Request $request): JsonResponse|RedirectResponse
     {
         $handleSearchQuery = $request->query('q', '');
         $users = $this->githubService->searchUsers($handleSearchQuery, $request->query('page', 1));
@@ -22,7 +24,7 @@ class GithubUserController extends Controller
         return response()->json(['data' => ['users' => $users['items'], 'total' => $users['total_count']]]);
     }
 
-    public function show(string $username)
+    public function show(string $username): JsonResponse
     {
         $user = $this->githubService->getUser($username);
         $user['follower_users'] = $this->githubService->getUserFollowers($username, 1);
@@ -30,7 +32,7 @@ class GithubUserController extends Controller
         return response()->json(['data' => $user]);
     }
 
-    public function followers(string $username, Request $request)
+    public function followers(string $username, Request $request): JsonResponse
     {
         $followers = $this->githubService->getUserFollowers($username, $request->query('page', 1));
         $nextPage = $request->query('page', 1) + 1;
