@@ -24,3 +24,4 @@ As this was a code inspection/challenge, I did not do everything the way I would
 - More PHPUnit tests could have been written
 - Frontend tests could have been written
 - I would likely move some of the logic from the controllers to actions where it is more than two lines per controller method.
+- The search for a github user is case sensitive currently.
